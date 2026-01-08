@@ -15,7 +15,7 @@ export default function FeedList({ events }: Props) {
   }
 
   return (
-    <div className="h-125 overflow-y-auto space-y-3">
+    <div className="h-[80vh] overflow-y-auto space-y-3">
       {events.map((event) => (
         <FeedItem key={event.id} event={event} />
       ))}

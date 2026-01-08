@@ -44,6 +44,7 @@ export function useWebSocketFeed() {
             return;
           }
 
+          //   Duplicate event check
           if (seenIds.current.has(data.id)) return;
 
           seenIds.current.add(data.id);
@@ -61,7 +62,7 @@ export function useWebSocketFeed() {
 
         setStatus("disconnected");
         retryCount.current += 1;
-
+        // Exponential backoff with max delay to avoid aggressive reconnect loops
         const delay = Math.min(1000 * 2 ** retryCount.current, 10_000);
         setTimeout(connect, delay);
       };

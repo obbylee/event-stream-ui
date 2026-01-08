@@ -1,36 +1,120 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# Real-Time Multi-Feed Dashboard (Frontend Trial Task)
 
-## Getting Started
+This project implements a real-time activity feed using **Next.js, React, TypeScript, TailwindCSS, and shadcn/ui**.  
+It demonstrates how to design a resilient real-time UI that consumes WebSocket events, handles connection issues, and supports filtering and search.
 
-First, run the development server:
+---
 
-```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
+## Features
+
+- Real-time feed powered by WebSocket
+- Connection status indicator (connected / reconnecting / disconnected)
+- Automatic reconnect with exponential backoff
+- Deduplication of incoming events
+- Safe handling of malformed WebSocket messages
+- Feed filtering via tabs (All, News, Market, Price)
+- Client-side search (title + body)
+- Scrollable feed designed to handle large datasets
+- Strongly typed event and UI state (TypeScript)
+
+---
+
+## Architecture Overview
+
+- **UI-first approach**: The feed UI was built using static mock data to establish layout and state flow.
+- **Separation of concerns**:
+  - UI components handle rendering only
+  - WebSocket logic is isolated in a custom hook
+- **Local state + hooks** were chosen over global state for simplicity and clarity.
+
+---
+
+## Project Structure
+
+```
+app/feed/
+├── page.tsx
+├── components/
+│   ├── FeedHeader.tsx
+│   ├── FeedTabs.tsx
+│   ├── SearchInput.tsx
+│   ├── FeedList.tsx
+│   └── FeedItem.tsx
+├── hooks/
+│   └── useWebSocketFeed.ts
+├── types.ts
+└── mock-events.ts
+server/
+└── mock-ws.ts
+
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+---
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+## Running the Project
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+### 1️⃣ Start the mock WebSocket server
 
-## Learn More
+The WebSocket server intentionally sends:
 
-To learn more about Next.js, take a look at the following resources:
+- Duplicate event IDs
+- Malformed messages
+- Continuous random events
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+This helps simulate real-world conditions.
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+```bash
+node server/mock-ws.ts
+```
 
-## Deploy on Vercel
+Server will run on:
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+```bash
+ws://localhost:8080
+```
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+---
+
+### 2️⃣ Start the Next.js app
+
+```bash
+npm install
+npm run dev
+```
+
+Then open:
+
+```
+http://localhost:3000/feed
+```
+
+---
+
+## Resilience & Error Handling
+
+- **Reconnect with backoff**: Exponential delay capped to prevent aggressive reconnect loops
+- **Deduplication**: In-memory `Set` prevents duplicate events
+- **Malformed messages**: Safely ignored via `try/catch` and shape validation
+- **Graceful disconnect handling**: UI remains responsive during reconnects
+
+---
+
+## Performance Considerations
+
+- Filtering and searching are memoized using `useMemo`
+- Feed rendering uses a scrollable container
+- Virtualized lists (e.g. `react-window`) can be added if the dataset grows significantly
+
+---
+
+## Trade-offs
+
+- Client-side filtering was chosen for simplicity
+- No persistent storage layer
+- No feed virtualization to keep the implementation focused on core requirements
+
+---
+
+## Notes
+
+This project focuses on **reliability, clarity, and production-style real-time data flow** rather than visual polish.

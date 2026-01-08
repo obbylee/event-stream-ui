@@ -23,7 +23,7 @@ export default function FeedPage() {
 
       return matchesFeed && matchesSearch;
     });
-  }, [selectedFeed, search]);
+  }, [events, selectedFeed, search]);
 
   return (
     <div className="p-6 max-w-4xl mx-auto space-y-4">
