@@ -61,7 +61,7 @@ wss.on("connection", (ws) => {
     };
 
     ws.send(JSON.stringify(event));
-  }, 2000);
+  }, 1000);
 
   ws.on("close", () => clearInterval(interval));
 });

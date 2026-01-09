@@ -7,6 +7,7 @@ export type ConnectionStatus =
   | "reconnecting"
   | "disconnected";
 
+const MAX_EVENTS = 500;
 const WS_URL = "ws://localhost:8080";
 
 export function useWebSocketFeed() {
@@ -50,7 +51,11 @@ export function useWebSocketFeed() {
           seenIds.current.add(data.id);
 
           if (!isUnmounted) {
-            setEvents((prev) => [data, ...prev]);
+            // Keep only latest events to prevent unbounded memory growth
+            setEvents((prev) => {
+              const next = [...prev, data];
+              return next.slice(-MAX_EVENTS);
+            });
           }
         } catch {
           // Malformed message — ignored safely
