@@ -1,7 +1,7 @@
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { FeedEvent, FEED_META } from "../types";
-import { cn } from "@/lib/utils";
+import { cn, formatRelativeTime } from "@/lib/utils";
 
 interface Props {
   event: FeedEvent;
@@ -20,7 +20,7 @@ export default function FeedItem({ event }: Props) {
             {meta.icon} {meta.label}
           </Badge>
           <span className="text-xs text-muted-foreground">
-            {new Date(event.timestamp).toLocaleTimeString()}
+            {formatRelativeTime(event.timestamp)}
           </span>
         </div>
 
